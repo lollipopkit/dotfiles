@@ -36,12 +36,14 @@ alias slog 'journalctl -u'
 alias uctl 'systemctl --user'
 alias sctl 'systemctl'
 alias fgl 'flutter gen-l10n'
-alias fpg 'flutter pub get'
 alias dfmt 'dart format .'
 alias gtp 'git_tag_push'
 alias ka 'kill_all'
 alias gr 'go run'
 alias gmt 'go mod tidy'
+alias dp 'dart pub'
+alias scpr 'rsync -P --rsh=ssh'
+alias fl_build 'dart run fl_build'
 
 set SSH_ENV "$HOME/.ssh/agent-environment"
 
@@ -146,6 +148,7 @@ function combine_dir_files_into_one -d "Combine files in a dir into one file"
                 set rel_path (string replace "$base_dir/" "" "$item")
                 
                 # 写入文件路径和内容
+                echo "$rel_path"
                 echo "$local_comment_symbol $rel_path" >> $local_output_file
                 cat "$item" >> $local_output_file
                 echo "" >> $local_output_file
@@ -162,82 +165,56 @@ function combine_dir_files_into_one -d "Combine files in a dir into one file"
     # 开始处理
     process_directory "$directory" "$directory" $output_file $comment_symbol
 
-    echo "处理完成。结果已写入 $output_file"
+    echo "已写入 $output_file"
 end
 
-# Usage:
-#   git_merge <user>[/<repo>] -b [<branch>] -d [<domain>]
-# args:
-#   user: can't be empty
-#   repo: can be empty, if empty, use current repo name
-#   branch: default main
-#   domain: default github.com
-# eg:
-#   git_merge user
-#   git_merge user/new_repo -b main
-#   git_merge user/repo -d gitlab.com
-function git_merge -d "Merge a remote repository"
-    set user $argv[1]
-    set repo ""
-    set branch "main"
-    set domain "github.com"
+function git_merge -d "合并远程仓库"
+    set -l options 'r/repo=' 'b/branch='
+    argparse $options -- $argv
 
-    # Remove first arg in argv list
-    set argv (echo $argv[2..-1])
-    
-    for i in (seq 2 2 (count $argv))
-        switch $argv[$i]
-            case "-b"
-                set -l branch_ $argv[(math $i + 1)]
-                if test -n "$branch_"
-                    set branch $branch_
-                end
-            case "-d"
-                set -l domain_ $argv[(math $i + 1)]
-                if test -n "$domain_"
-                    set domain $domain_
-                end
+    set -l USERNAME $argv[1]
+    set -l REPO $_flag_repo
+    set -l BRANCH $_flag_branch
+
+    # 如果没有指定 REPO，则使用当前仓库名称
+    if test -z "$REPO"
+        set REPO (basename (git rev-parse --show-toplevel))
+    end
+
+    # 如果没有指定 BRANCH，则使用 main
+    if test -z "$BRANCH"
+        set BRANCH "main"
+    end
+
+    # 保存当前分支名
+    set CURRENT_BRANCH (git rev-parse --abbrev-ref HEAD)
+
+    # 确保工作目录干净
+    if not git diff-index --quiet HEAD --
+        echo "错误：工作目录不干净，请先提交或存储更改"
+        return 1
+    end
+
+    # 添加远程仓库（如果不存在）
+    git remote add $USERNAME https://github.com/$USERNAME/$REPO.git 2>/dev/null; or true
+
+    # 获取最新的远程分支信息
+    git fetch $USERNAME
+
+    # 尝试合并
+    if git merge --no-edit --no-ff $USERNAME/$BRANCH
+        echo "成功合并 $USERNAME/$REPO:$BRANCH 到 $CURRENT_BRANCH"
+    else
+        # 合并失败，尝试使用 -Xtheirs 策略
+        if git merge --no-edit --no-ff -Xtheirs $USERNAME/$BRANCH
+            echo "使用 -Xtheirs 策略成功合并 $USERNAME/$REPO:$BRANCH 到 $CURRENT_BRANCH"
+        else
+            # 如果仍然失败，中止合并并恢复到原始状态
+            git merge --abort
+            echo "错误：无法自动合并。请手动解决冲突"
+            return 1
         end
     end
-
-    if test (count $argv) -ge 3
-        set repo $argv[2]
-    else
-        set repo (basename (git remote get-url origin) .git)
-    end
-
-    set url "git@$domain:$user/$repo.git"
-
-    # Ask confirmation
-    echo $url
-    echo $branch
-    echo "continue? [y/n]"
-    read -l confirm
-    if test "$confirm" != "y"
-        return 0
-    end
-
-    # If remote not exists
-    if not git remote | grep -q $user
-        git remote add $user $url
-    end
-    
-    echo "Fetching..."
-    git fetch $user
-    echo "Merging..."
-    git merge --squash $user/$branch
-end
-
-function git_first -d "Get the first commit of a git repository"
-    echo "Git First"
-    set first_commit (git rev-list --max-parents=0 HEAD)
-    echo "Hash: [\033[33m$first_commit\033[0m]"
-    echo "Date: [\033[32m(git show -s --format=%ci $first_commit)\033[0m]"
-    set files_changed (git show --pretty="" --name-only $first_commit)
-    set first_file (echo "$files_changed" | sed -n 1p)
-    echo "File: [\033[34m$first_file\033[0m]"
-    set first_line (git show $first_commit:$first_file | head -1)
-    echo "Line: [\033[35m$first_line\033[0m]"
 end
 
 function git_lines -d "Get the lines of code of a git repository"
@@ -250,4 +227,9 @@ function git_lines -d "Get the lines of code of a git repository"
     echo -n (set_color green) (date) (set_color normal)
     echo "]"
     git log --author="$name" --pretty=tformat: --numstat -- $dir | awk '{ add += $1 ; subs += $2 ; loc += $1 + $2 } END { printf "added lines: \033[34m%d\033[0m, removed lines: \033[31m%d\033[0m, total lines: \033[32m%d\033[0m\n", add, subs, loc }'
+end
+
+# Print the first commit's hash, line, author and date as text(non interactive).
+function git_first -d "Get the first commit of a git repository"
+    git log --reverse --pretty=format:"%h  %ad  %s  %an" --date=short | head -n 1
 end
