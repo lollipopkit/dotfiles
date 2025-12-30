@@ -16,3 +16,8 @@
   ```bash
   fisher install (cat ~/.config/fish/fish_plugins)
   ```
+
+### 一键初始化
+```bash
+curl -sL https://raw.githubusercontent.com/lollipopkit/fish-cfg/refs/heads/main/init.sh | bash
+```
