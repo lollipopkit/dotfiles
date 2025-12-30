@@ -47,12 +47,12 @@ function start_ssh_agent -d "Start a new SSH agent"
     /usr/bin/ssh-add
 end
 
-if test -f "$SSH_ENV"
-    . "$SSH_ENV" > /dev/null
-    or start_ssh_agent
-else
-    start_ssh_agent
-end
+# if test -f "$SSH_ENV"
+#     . "$SSH_ENV" > /dev/null
+#     or start_ssh_agent
+# else
+#     start_ssh_agent
+# end
 
 function fish_prompt
     set -l current_time (date +%H:%M)
