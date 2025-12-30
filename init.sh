@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # 初始化脚本（Debian/Ubuntu 系）
+# NOTE:
+# - This file is **bash**, not fish. Do not `source` it from fish.
+# - Run it as: `sudo bash ./init.sh` (or `bash ./init.sh` if already root).
 set -euo pipefail
 
 if [ -z "${BASH_VERSION:-}" ]; then
@@ -27,14 +30,27 @@ run_as_target_user() {
   local cmd="$1"
   if [ "$target_user" = "$(id -un)" ]; then
     bash -lc "$cmd"
-  else
-    if command -v su >/dev/null 2>&1; then
-      su - "$target_user" -c "$cmd"
-    else
-      echo "Need 'su' to run user-scoped steps as $target_user."
-      exit 1
-    fi
+    return
   fi
+
+  # IMPORTANT:
+  # `su - user -c "..."` runs the command using the user's *login shell*.
+  # If their login shell is fish, bash-style quoting breaks and fish will try to parse it.
+  # Force bash explicitly so the quoting rules are predictable.
+  if command -v sudo >/dev/null 2>&1; then
+    sudo -H -u "$target_user" bash -lc "$cmd"
+    return
+  fi
+
+  if command -v su >/dev/null 2>&1; then
+    local quoted
+    printf -v quoted '%q' "$cmd"
+    su - "$target_user" -s /bin/bash -c "bash -lc $quoted"
+    return
+  fi
+
+  echo "Need 'sudo' or 'su' to run user-scoped steps as $target_user."
+  exit 1
 }
 
 apt update && apt upgrade -y
