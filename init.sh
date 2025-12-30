@@ -67,15 +67,15 @@ curl -fsSL "$config_url" -o "$fish_dir/config.fish"
 chown "$target_user" "$fish_dir/config.fish"
 chmod 0644 "$fish_dir/config.fish"
 
-run_as_target_user "fish -c 'source \"$fish_dir/config.fish\"'"
+run_as_target_user "fish -c 'source \"$fish_dir/config.fish\"' < /dev/null"
 # 安装 fisher
-run_as_target_user "fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher'"
+run_as_target_user "fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher' < /dev/null"
 fish_plugins_url="${raw_base_url}fish_plugins"
 curl -fsSL "$fish_plugins_url" -o "$fish_dir/fish_plugins"
 chown "$target_user" "$fish_dir/fish_plugins"
 chmod 0644 "$fish_dir/fish_plugins"
 
-run_as_target_user "fish -c 'fisher install (cat \"$fish_dir/fish_plugins\")'"
+run_as_target_user "fish -c 'fisher install (cat \"$fish_dir/fish_plugins\")' < /dev/null"
 
 if command -v chsh >/dev/null 2>&1; then
   chsh -s /usr/bin/fish "$target_user" || true
