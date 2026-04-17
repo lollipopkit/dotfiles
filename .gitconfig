@@ -1,0 +1,18 @@
+[user]
+        email = 10864310+lollipopkit@users.noreply.github.com
+        name = lollipopkit🏳️‍⚧️
+[credential]
+        helper = store
+[includeIf "gitdir:~/proj/work/"]
+        path = ~/proj/work/.gitconfig
+[core]
+        excludesfile = /Users/lk/.gitignore_global
+[filter "lfs"]
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
+        process = git-lfs filter-process
+        required = true
+[init]
+        defaultBranch = main
+[pull]
+        rebase = false

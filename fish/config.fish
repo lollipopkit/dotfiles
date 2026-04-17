@@ -23,8 +23,6 @@ set -g sponge_successful_exit_codes 0 130 255
 set -g sponge_purge_only_on_exit true
 set -g hydro_symbol_prompt '>'
 set -g hydro_symbol_git_dirty '!'
-set -g hydro_color_pwd BB2D6F
-set -g hydro_color_prompt BB2D6F
 
 alias dps 'docker ps -a --format "table {{printf \"%-15.15s %-15.15s %-30.30s %-15.15s\" .ID .Names .Image .Status}}"'
 alias dcp 'docker compose'
@@ -34,32 +32,3 @@ alias dp 'dart pub'
 alias drbb 'dart run build_runner build --delete-conflicting-outputs'
 alias scpr 'rsync -P --rsh=ssh'
 alias fl_build 'dart run fl_build'
-
-set SSH_ENV "$HOME/.ssh/agent-environment"
-
-function start_ssh_agent -d "Start a new SSH agent"
-    echo "Initialising new SSH agent..."
-
-    /usr/bin/ssh-agent | sed 's/^echo/#echo/' | sed 's/;.*$//' | sed -E 's/([A-Z_][A-Z0-9_]+)=(.*)/set -x \1 \2/g' > "$SSH_ENV"
-
-    chmod 600 "$SSH_ENV"
-    source "$SSH_ENV" > /dev/null
-    /usr/bin/ssh-add
-end
-
-# if test -f "$SSH_ENV"
-#     . "$SSH_ENV" > /dev/null
-#     or start_ssh_agent
-# else
-#     start_ssh_agent
-# end
-
-function fish_prompt
-    set -l current_time (date +%H:%M)
-    printf '%s%s%s %s%s%s %s%s%s%s%s%s%s%s%s ' \
-        "$_hydro_color_pwd" "$current_time" "$hydro_color_normal" \
-        "$_hydro_color_pwd" "$_hydro_pwd" "$hydro_color_normal" \
-        "$_hydro_color_git" "$$_hydro_git" "$hydro_color_normal" \
-        "$_hydro_color_duration" "$_hydro_cmd_duration" "$hydro_color_normal" \
-        "$_hydro_status" "$hydro_color_normal"
-end

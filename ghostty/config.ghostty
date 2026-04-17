@@ -1,0 +1,28 @@
+# iTerm2 profile ported to Ghostty.
+theme = dark:/Users/lk/.config/ghostty/themes/iterm2-dark,light:/Users/lk/.config/ghostty/themes/iterm2-light
+term = xterm-256color
+
+font-family = Maple Mono Normal NF CN
+font-style = Regular
+font-style-bold = Bold
+font-style-italic = Italic
+font-style-bold-italic = Bold Italic
+font-size = 12
+font-feature = -calt,-liga,-dlig
+
+# cursor-style = block
+cursor-style-blink = false
+window-width = 177
+window-height = 47
+window-padding-x = 0
+window-padding-y = 0
+window-decoration = auto
+macos-titlebar-style = tabs
+macos-window-buttons = visible
+macos-option-as-alt = false
+
+mouse-shift-capture = never
+
+# Ghostty uses bytes rather than lines for scrollback; this approximates
+# the iTerm2 10k line setting without being overly aggressive.
+scrollback-limit = 8000000
