@@ -1,0 +1,75 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "xhigh"
+model_provider = "cliproxyapi"
+
+web_search = "live"
+developer_instructions = """输出必须使用中文,专业名词可保留原文;
+如果沙箱内失败且安全的操作,可以尝试申请提权;
+git commit msg应该类似`feat:`/`fix:`/`docs:`/`rm:`/`migrate:`/`opt.:`等等常见开头;
+除非用户要求,否则不能force push;
+除非明确要求自动git push,否则最多自动git commit;
+如果存在.commandcode/目录下的taste.md,应该遵循其中的规范;
+可能有另外的agent在同时运行,不要修改不属于你的文件,除非你确定需要这么做;
+运行/goal时,每轮结束使用handoff skill输出当前进度和剩余任务到handoff.md,保持文件简短+最新,细节可以保存到progress.md;
+单源码文件最多1500行,允许暂时超过但需要尽快拆分;"""
+hide_agent_reasoning = true # 隐藏Agent的推理过程
+
+# approval_policy = "untrusted" # 对不受信任项目启用审批
+sandbox_mode = "workspace-write" # 启用写入权限的沙箱模式
+approvals_reviewer = "guardian_subagent"
+approval_policy = "on-request"
+
+suppress_unstable_features_warning = true # 隐藏不稳定功能的警告
+
+[sandbox_workspace_write]
+network_access = true # 允许网络访问
+
+[feedback]
+enabled = false
+
+[features]
+apps = false
+unified_exec = true
+shell_snapshot = true
+steer = true
+guardian_approval = true
+multi_agent = true
+memories = true
+prevent_idle_sleep = true
+terminal_resize_reflow = true
+goals = true
+js_repl = false
+
+[model_providers.cliproxyapi]
+name = "cliproxyapi"
+base_url = "http://100.103.213.81:8317/v1"
+wire_api = "responses"
+env_key = "PIMM_API_KEY"
+
+[notice]
+hide_gpt5_1_migration_prompt = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
+hide_rate_limit_model_nudge = true
+
+[notice.model_migrations]
+"gpt-5.1-codex-max" = "gpt-5.2-codex"
+"gpt-5.3-codex" = "gpt-5.4"
+
+[apps.connector_76869538009648d5b282a4bb21c3d157]
+enabled = false
+
+[tui]
+status_line = ["model-with-reasoning", "context-used", "weekly-limit"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[plugins]
+"presentations@openai-primary-runtime" = { enabled = true }
+"spreadsheets@openai-primary-runtime" = { enabled = true }
+"documents@openai-primary-runtime" = { enabled = true }
+"browser@openai-bundled" = { enabled = true }
+
+[projects]
+"/Users/lk/.codex" = { trust_level = "trusted" }
