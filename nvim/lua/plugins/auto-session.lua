@@ -4,10 +4,11 @@ return { {
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
         log_level = "error",
-        auto_session_enable_last_session = true, -- 启用自动恢复上次会话
-        auto_session_root_dir = vim.fn.stdpath("data") .. "/sessions/",
-        auto_save_enabled = true,                -- 退出时自动保存
-        auto_restore_enabled = true,             -- 启动时自动恢复
-        auto_session_use_git_branch = false      -- 按项目分会话（可选）
+        root_dir = vim.fn.stdpath("data") .. "/sessions/",
+        auto_save = true,                  -- 退出时自动保存“当前目录”的会话
+        auto_restore = true,               -- 启动时恢复“当前目录”的会话（VSCode 式状态恢复）
+        -- 关键：不恢复“上一次那个项目”的会话。否则在无会话目录打开 nvim
+        -- 会去 cd 到旧项目目录，一旦目录被删就报 E344。
+        auto_restore_last_session = false,
     }
 } }
