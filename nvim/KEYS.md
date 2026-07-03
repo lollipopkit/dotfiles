@@ -58,6 +58,13 @@
 - `<Leader>e` - 切换文件树
 - `<Leader>ef` - 在文件树中定位当前文件
 
+## Git (LazyGit)
+
+- `<Leader>gg` - 打开 LazyGit 浮窗（暂存 / 提交 / 推送 / 分支 / stash / log）
+- `<Leader>gf` - 当前文件的 LazyGit
+- `<Leader>gl` - 提交历史（LazyGitFilter）
+- 浮窗内 `<Esc>` / `q` - 返回上一级 / 退出（交由 lazygit 处理）
+
 ## 运行 / 测试（按语言）
 
 > 统一用 `<Leader>r*`：r = Run。你选择的是 **统一走终端**（`:terminal ...`），不依赖插件命令。
