@@ -1,3 +1,12 @@
+# Homebrew 未把自己写进 PATH 时(新机器首次装完),按已知安装位置探测并加载
+if test -x /opt/homebrew/bin/brew
+    eval (/opt/homebrew/bin/brew shellenv)
+else if test -x /usr/local/bin/brew
+    eval (/usr/local/bin/brew shellenv)
+else if test -x /home/linuxbrew/.linuxbrew/bin/brew
+    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+end
+
 if test (uname) = Darwin
     fish_add_path /Applications/Xcode.app/Contents/Developer/usr/bin
 end
