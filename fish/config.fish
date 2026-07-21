@@ -1,4 +1,6 @@
-fish_add_path /Applications/Xcode.app/Contents/Developer/usr/bin
+if test (uname) = Darwin
+    fish_add_path /Applications/Xcode.app/Contents/Developer/usr/bin
+end
 fish_add_path ~/.local/bin
 fish_add_path ~/go/bin
 fish_add_path /usr/local/go/bin
@@ -7,12 +9,24 @@ fish_add_path ~/.bun/bin
 fish_add_path ~/.cargo/bin
 fish_add_path ~/.pub-cache/bin
 
-# Change to /opt/homebrew/bin/fish if using Homebrew Fish
-set -x SHELL /usr/bin/fish
-set -x TZ Asia/Shanghai
+set -x SHELL (status fish-path)
+set -x TZ Asia/Singapore
 set -x LC_ALL en_US.UTF-8
 set -x EDITOR vim
 #set -x DOCKER_HOST unix:///run/user/1000/docker.sock
+
+# 无显示器 / 无头环境下,让需要打开浏览器的工具改为直接打印链接
+set -l headless 0
+if test (uname) = Linux
+    if not set -q DISPLAY; and not set -q WAYLAND_DISPLAY
+        set headless 1
+    end
+else if set -q SSH_CONNECTION
+    set headless 1
+end
+if test $headless = 1
+    set -x BROWSER echo
+end
 set -x FIC $HOME/.config/fish/config.fish
 set -x FIH $HOME/.local/share/fish/fish_history
 set -gx NVM_DIR $HOME/.nvm

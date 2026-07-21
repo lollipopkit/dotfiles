@@ -1,5 +1,5 @@
 # iTerm2 profile ported to Ghostty.
-theme = dark:/Users/lk/.config/ghostty/themes/iterm2-dark,light:/Users/lk/.config/ghostty/themes/iterm2-light
+theme = dark:iterm2-dark,light:iterm2-light
 term = xterm-256color
 
 font-family = Maple Mono Normal NF CN

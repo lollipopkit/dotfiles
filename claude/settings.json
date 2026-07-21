@@ -105,7 +105,7 @@
   "enableWorkflows": true,
   "statusLine": {
     "type": "command",
-    "command": "bash /Users/lk/.claude/statusline-command.sh"
+    "command": "sh \"$HOME/.claude/statusline-command.sh\""
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,

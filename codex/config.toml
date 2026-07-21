@@ -70,6 +70,3 @@ status_line = ["model-with-reasoning", "context-used", "weekly-limit"]
 "spreadsheets@openai-primary-runtime" = { enabled = true }
 "documents@openai-primary-runtime" = { enabled = true }
 "browser@openai-bundled" = { enabled = true }
-
-[projects]
-"/Users/lk/.codex" = { trust_level = "trusted" }
