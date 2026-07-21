@@ -32,3 +32,7 @@ alias dp 'dart pub'
 alias drbb 'dart run build_runner build --delete-conflicting-outputs'
 alias scpr 'rsync -P --rsh=ssh'
 alias fl_build 'dart run fl_build'
+
+if not command -q npm
+    nvm use lts >/dev/null
+end

@@ -115,5 +115,6 @@
   "effortLevel": "xhigh",
   "theme": "light-daltonized",
   "terminalProgressBarEnabled": false,
-  "useAutoModeDuringPlan": false
+  "useAutoModeDuringPlan": false,
+  "skipDangerousModePermissionPrompt": true
 }
