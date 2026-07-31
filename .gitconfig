@@ -1,8 +1,6 @@
 [user]
         email = 10864310+lollipopkit@users.noreply.github.com
         name = lollipopkit🏳️‍⚧️
-[credential]
-        helper = store
 [includeIf "gitdir:~/proj/work/"]
         path = ~/proj/work/.gitconfig
 [core]
@@ -16,3 +14,9 @@
         defaultBranch = main
 [pull]
         rebase = false
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
