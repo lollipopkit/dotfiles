@@ -8,6 +8,9 @@
 
 input=$(cat)
 
+# TODO: temporary — set to 1 to bring the working directory back.
+show_cwd=0
+
 # --- hydro-style prompt parts ---
 # pwd: use cwd from JSON input (avoids running pwd in a potentially wrong dir)
 cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
@@ -33,9 +36,12 @@ if [ -n "$git_branch" ]; then
 fi
 
 # --- model ---
-# display_name is the short label ("Opus 5 (1M)"); id is the full model id and
-# only stands in when a build sends no display name.
+# display_name is the short label ("Opus 5 (1M context)"); id is the full model
+# id and only stands in when a build sends no display name.
 model_name=$(printf '%s' "$input" | jq -r '.model.display_name // .model.id // empty')
+# Drop a trailing parenthesised qualifier ("Opus 5 (1M context)" -> "Opus 5"):
+# the window size is already implied by the percentage next to it.
+model_name=$(printf '%s' "$model_name" | sed -E 's/[[:space:]]*\([^()]*\)[[:space:]]*$//')
 
 # --- context window + rate limit quota ---
 # `numbers` drops null and anything non-numeric, so the awk expressions below
@@ -45,6 +51,20 @@ five_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage
 five_resets=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at | numbers')
 week_used=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage | numbers')
 week_resets=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.resets_at | numbers')
+
+# TODO: temporary — records raw (unrounded) quota readings to estimate how much
+# of the weekly quota one 5h window takes. Remove once the ratio is known.
+# A row is appended only when a reading changes, so the file stays small even
+# though the status line refreshes many times a minute.
+quota_log="$HOME/.claude/statusline-quota.tsv"
+if [ -n "$five_used" ] && [ -n "$week_used" ]; then
+  [ -f "$quota_log" ] || printf 'ts\tfive_used\tfive_resets\tweek_used\tweek_resets\n' > "$quota_log"
+  quota_row=$(printf '%s\t%s\t%s\t%s' "$five_used" "$five_resets" "$week_used" "$week_resets")
+  last_row=$(tail -n 1 "$quota_log" | cut -f 2-)
+  if [ "$quota_row" != "$last_row" ]; then
+    printf '%s\t%s\n' "$(date +%s)" "$quota_row" >> "$quota_log"
+  fi
+fi
 
 # Colors — match hydro's default palette as closely as possible.
 # hydro uses: pwd=blue(#5b9bd5-ish), branch=green(#78c2a4), dirty=yellow
@@ -123,17 +143,21 @@ _append_quota "$week_used" "$week_resets"
 # --- assemble final line ---
 # hydro layout: <pwd>  <branch[!]>  [<model> · <ctx used%>]  [quota]
 # pwd in blue, branch in green (dirty marker in yellow)
-prompt_pwd="${blue}${cwd}${reset}"
+prompt_pwd=""
+[ "$show_cwd" = "1" ] && prompt_pwd="${blue}${cwd}${reset}"
 
 prompt_git=""
 if [ -n "$git_part" ]; then
+  # No leading gap when the pwd is hidden, or the line starts indented
+  sep="  "
+  [ -z "$prompt_pwd" ] && sep=""
   # Split branch and dirty marker for separate coloring
   branch_name="${git_part%!}"
   if [ "$git_part" != "$branch_name" ]; then
     # dirty
-    prompt_git="  ${green}${branch_name}${yellow}!${reset}"
+    prompt_git="${sep}${green}${branch_name}${yellow}!${reset}"
   else
-    prompt_git="  ${green}${branch_name}${reset}"
+    prompt_git="${sep}${green}${branch_name}${reset}"
   fi
 fi
 
@@ -148,6 +172,12 @@ if [ -n "$ctx_part" ]; then
   fi
 fi
 
-[ -n "$model_ctx" ] && line="${line}  ${dim}[${reset}${model_ctx}${dim}]${reset}"
-[ -n "$quota_parts" ] && line="${line}  ${dim}[${reset}${quota_parts}${dim}]${reset}"
+_append_bracket() {
+  [ -z "$1" ] && return
+  [ -n "$line" ] && line="${line}  "
+  line="${line}${dim}[${reset}$1${dim}]${reset}"
+}
+
+_append_bracket "$model_ctx"
+_append_bracket "$quota_parts"
 printf "%b" "$line"

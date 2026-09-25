@@ -20,3 +20,11 @@
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "smtp://smtp.resend.com:465"]
+	helper = 
+	helper = "!f() { test \"$1\" = get && printf \"password=%s\\n\" \"$(security find-generic-password -s resend-api-key -w)\"; }; f"
+[sendemail]
+	smtpServer = smtp.resend.com
+	smtpServerPort = 465
+	smtpEncryption = ssl
+	smtpUser = resend

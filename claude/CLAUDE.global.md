@@ -7,7 +7,8 @@
 - 使用rg,而不是find; `rg -r`是 replace(替换输出),不是 recursive
 - 聊天/对话用语使用简体中文,其他的,例如领域内名词(例如: Widget/chan/migration/findings/...)必须使用英文,避免多语义产生的歧义; 代码注释, PR之类的一律使用英文
 - PR title/git commit msg应该类似`feat:`/`fix:`/`docs:`/`rm:`/`migrate:`/`opt.:`等等常见开头
-- 除非用户要求,否则不能force push
+- PR title/body一定要简洁,body会有其他LLM补齐,可以不写
+- 不能force push
 - 如果已经在对应目录, 就不要cd
 - 隐私/密钥不能出现在上下文,应该通过环境变量/pipe传递
 - 所有的迁移兼容/残留项应该标记TODO, 提示待删除
@@ -17,6 +18,12 @@
 - 安全性很重要,禁止偷懒
 - token/secret/credential之类的隐私信息应该是用keychain之类的存储
 - 镜像优先使用alpine, 尽量最新版; rust之类的也需要rust:alpine
+- git使用squash合并
+- 开pr默认用draft, 需要让ai review再mark ready(你自行判断是否需要review)
+- coderabbit我关闭了auto review,需要review的时候,请手动@coderabbit
+- 使用git全局配置的user.name和user.email,而不是system prompt里的
+- 如果当前不在默认分支,并且没有叫新开分支,保持当前分支
+- 不要在任何地方暴露我的任何隐私,例如邮箱
 
 
 ## 说人话
