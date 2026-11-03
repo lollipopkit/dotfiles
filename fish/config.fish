@@ -23,10 +23,9 @@ set -x TZ Asia/Singapore
 set -x LC_ALL en_US.UTF-8
 set -x EDITOR vim
 #set -x DOCKER_HOST unix:///run/user/1000/docker.sock
-if set -l pimm_api_key (security find-generic-password -a $USER -s pimm-api-key -w 2>/dev/null)
-    set -gx PIMM_API_KEY $pimm_api_key
-end
-set -x PIMM_BASE_URL "http://lax:8317/v1"
+# PIMM_API_KEY: read from 1Password by the functions that use it (claude), not at every shell's
+# start, which would ask 1Password to authorize each new terminal.
+set -x PIMM_BASE_URL "https://cpa.lolli.tech/v1"
 
 # 无显示器 / 无头环境下,让需要打开浏览器的工具改为直接打印链接
 set -l headless 0
@@ -78,15 +77,22 @@ function ccpxy -d "Claude Code with Profile-based models"
 
     # Anthropic SDK 会自行追加 /v1/messages,base URL 不能带 /v1
     set -x ANTHROPIC_BASE_URL (string replace -r '/v1/?$' '' -- $PIMM_BASE_URL)
+    if not set -q PIMM_API_KEY
+        set -fx PIMM_API_KEY (op read --no-newline op://Dev/pimm-api-key/password)
+        or begin
+            echo "No 1Password item Dev/pimm-api-key"
+            return 1
+        end
+    end
     set -x ANTHROPIC_AUTH_TOKEN $PIMM_API_KEY
 
     # Set profile-specific models
     switch "$profile"
-        case "muse"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'muse-spark-1.3-contributor'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'muse-spark-1.3-contributor'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'muse-spark-1.3-contributor'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'muse-spark-1.3-contributor'
+        case "ds"
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'deepseek-v4.1-flash'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'deepseek-v4.1-flash'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'deepseek-v4.1-flash'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'deepseek-v4.1-flash'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "mimo"
             set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'mimo-v2.6-pro'
@@ -94,29 +100,42 @@ function ccpxy -d "Claude Code with Profile-based models"
             set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'mimo-v2.6-pro'
             set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'mimo-v2.6-pro'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
-        case "ds"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'deepseek-v4.1-flash'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'deepseek-v4.1-flash'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'deepseek-v4.1-flash'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'deepseek-v4.1-flash'
-            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "glm"
             set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'glm-5.3-flash'
             set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'glm-5.3-flash'
             set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'glm-5.3-flash'
             set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'glm-5.3-flash'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
-        case "sol"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'gpt-5.6-sol'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-5.6-sol'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-5.6-sol'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-5.6-sol'
-            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "luna"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'gpt-5.6-luna'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-5.6-luna'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-5.6-luna'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-5.6-luna'
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'gpt-6-luna'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-6-luna'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-6-luna'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-6-luna'
+            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
+        case "astra"
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'gpt-6-astra'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-6-astra'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-6-astra'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-6-astra'
+            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
+        case "haiku"
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'claude-haiku-5-5'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'claude-haiku-5-5'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'claude-haiku-5-5'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'claude-haiku-5-5'
+            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
+        case "cyber"
+            set -l rp_key (op read --no-newline op://Dev/orca-cyber-api/password)
+            or begin
+                echo "No 1Password item Dev/orca-cyber-api"
+                return 1
+            end
+            set -x ANTHROPIC_BASE_URL 'https://api.orcarouter.ai/'
+            set -x ANTHROPIC_AUTH_TOKEN $rp_key
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'orca/orcacyber-glm-5.3-flash'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'orca/orcacyber-glm-5.3-flash'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'orca/orcacyber-glm-5.3-flash'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'orca/orcacyber-glm-5.3-flash'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "c"
             # pass

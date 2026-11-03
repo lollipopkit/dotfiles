@@ -22,9 +22,13 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "smtp://smtp.resend.com:465"]
 	helper = 
-	helper = "!f() { test \"$1\" = get && printf \"password=%s\\n\" \"$(security find-generic-password -s resend-api-key -w)\"; }; f"
+	helper = "!f() { test \"$1\" = get && printf \"password=%s\\n\" \"$(op read --no-newline op://Dev/resend-api-key/password)\"; }; f"
 [sendemail]
-	smtpServer = smtp.resend.com
+	smtpServer = smtp.purelymail.com
 	smtpServerPort = 465
 	smtpEncryption = ssl
-	smtpUser = resend
+[include]
+	path = ~/.gitconfig.local
+[credential "smtp://smtp.purelymail.com:465"]
+	helper = 
+	helper = "!f() { test \"$1\" = get || return 0; u=$(sed -n \"s/^username=//p\"); test -n \"$u\" || return 0; p=$(op read --no-newline \"op://Dev/purelymail-smtp-${u%%@*}/password\") && printf \"password=%s\\n\" \"$p\"; }; f"

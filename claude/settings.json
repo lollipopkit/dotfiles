@@ -8,7 +8,8 @@
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
     "DO_NOT_TRACK": "1",
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0"
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "85"
   },
   "attribution": {
     "commit": "",
@@ -103,6 +104,7 @@
   },
   "model": "opus",
   "enableWorkflows": true,
+  "workflowKeywordTriggerEnabled": false,
   "statusLine": {
     "type": "command",
     "command": "sh \"$HOME/.claude/statusline-command.sh\""
@@ -115,7 +117,8 @@
     "skill-creator@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "exa@claude-plugins-official": true,
-    "paddle@claude-community": true
+    "paddle@claude-community": true,
+    "peer-model@lk-ccp": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {
@@ -123,12 +126,20 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-community"
       }
+    },
+    "lk-ccp": {
+      "source": {
+        "source": "github",
+        "repo": "lollipopkit/cc-plugins"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "askUserQuestionTimeout": "5m",
   "skipDangerousModePermissionPrompt": true,
   "theme": "light-daltonized",
+  "fileCheckpointingEnabled": false,
   "terminalProgressBarEnabled": false,
   "useAutoModeDuringPlan": false,
   "disableDeepLinkRegistration": "disable"
