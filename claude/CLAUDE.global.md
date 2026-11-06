@@ -27,7 +27,10 @@
   - 复用优先,不要到处造轮子
 - 所有需要改的都改,不要偷懒;不要只是提出问题,直接一起解决了,做完一项feat/fix,自行运行/code-review,修完再开pr
 - 安全性很重要,禁止偷懒
-- token/secret/credential之类的隐私信息存1Password(vault `Dev`,Password类条目):读`op read op://Dev/<名称>/password`,写用JSON经stdin(`op item create --vault Dev -`),不用macOS keychain;每个进程树首次调用需授权,同一步的读取放在一个命令里
+- token/secret/credential之类的隐私信息存1Password(vault `Dev`),不用macOS keychain;每个进程树首次调用需授权,同一步的读取放在一个命令里
+  - 类别:第三方签发的API token/key用API Credential(读`op read op://Dev/<名称>/credential`,成对的key id放`username`,读`.../username`);SSH主机sudo用Server、数据库角色用Database、网页账号用Login、自行生成的密钥用Password(这几类读`.../password`)、邮箱SMTP用Email Account(读`.../SMTP/password`)
+  - 写用JSON经stdin(`op item create --vault Dev -`,字段id见`op item template get <类别>`),值不进argv
+  - 项目不写明文`.env`:用`op://`引用配合`op run --env-file`,或1Password Environments挂载`.env`
 - 镜像优先使用alpine, 尽量最新版; rust之类的也需要rust:alpine
   - 只需要写大版本,然后及时拉更新,删除旧的
 - git使用squash合并
