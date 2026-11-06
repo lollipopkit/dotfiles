@@ -47,6 +47,8 @@ set -gx BUN_INSTALL "$HOME/.bun"
 set -gx OP_BIOMETRIC_UNLOCK_ENABLED true
 # SSH keys live in 1Password; launchd's ssh-agent may win the race at login
 set -gx SSH_AUTH_SOCK "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+# rclone.conf is encrypted; its password is in 1Password
+set -gx RCLONE_PASSWORD_COMMAND "op read --no-newline op://Dev/rclone-config/password"
 
 set -g fish_greeting
 set -g sponge_successful_exit_codes 0 130 255
