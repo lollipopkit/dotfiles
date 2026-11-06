@@ -32,7 +32,7 @@
 	path = ~/.gitconfig.local
 [credential "smtp://smtp.purelymail.com:465"]
 	helper = 
-	helper = "!f() { test \"$1\" = get || return 0; u=$(sed -n \"s/^username=//p\"); test -n \"$u\" || return 0; p=$(op read --no-newline \"op://Dev/purelymail-smtp-${u%%@*}/password\") && printf \"password=%s\\n\" \"$p\"; }; f"
+	helper = "!f() { test \"$1\" = get || return 0; u=$(sed -n \"s/^username=//p\"); test -n \"$u\" || return 0; p=$(op read --no-newline \"op://Dev/purelymail-smtp-${u%%@*}/SMTP/password\") && printf \"password=%s\\n\" \"$p\"; }; f"
 [gpg]
 	format = ssh
 [gpg "ssh"]
