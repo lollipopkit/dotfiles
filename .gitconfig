@@ -1,6 +1,7 @@
 [user]
         email = 10864310+lollipopkit@users.noreply.github.com
         name = lollipopkit🏳️‍⚧️
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP8grpZe+ACYot3fO8PcFZhIVVPw5EAizZJVH8/U1vfH
 [includeIf "gitdir:~/proj/work/"]
         path = ~/proj/work/.gitconfig
 [core]
@@ -22,7 +23,7 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "smtp://smtp.resend.com:465"]
 	helper = 
-	helper = "!f() { test \"$1\" = get && printf \"password=%s\\n\" \"$(op read --no-newline op://Dev/resend-api-key/password)\"; }; f"
+	helper = "!f() { test \"$1\" = get && printf \"password=%s\\n\" \"$(op read --no-newline op://Dev/resend-api-key/credential)\"; }; f"
 [sendemail]
 	smtpServer = smtp.purelymail.com
 	smtpServerPort = 465
@@ -32,3 +33,12 @@
 [credential "smtp://smtp.purelymail.com:465"]
 	helper = 
 	helper = "!f() { test \"$1\" = get || return 0; u=$(sed -n \"s/^username=//p\"); test -n \"$u\" || return 0; p=$(op read --no-newline \"op://Dev/purelymail-smtp-${u%%@*}/password\") && printf \"password=%s\\n\" \"$p\"; }; f"
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+	allowedSignersFile = /Users/lk/.ssh/allowed_signers
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true

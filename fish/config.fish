@@ -43,6 +43,10 @@ set -x FIC $HOME/.config/fish/config.fish
 set -x FIH $HOME/.local/share/fish/fish_history
 set -gx NVM_DIR $HOME/.nvm
 set -gx BUN_INSTALL "$HOME/.bun"
+# macOS TCC blocks terminals from reading 1Password's group container, so `op` can't detect the app integration
+set -gx OP_BIOMETRIC_UNLOCK_ENABLED true
+# SSH keys live in 1Password; launchd's ssh-agent may win the race at login
+set -gx SSH_AUTH_SOCK "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
 set -g fish_greeting
 set -g sponge_successful_exit_codes 0 130 255
@@ -78,7 +82,7 @@ function ccpxy -d "Claude Code with Profile-based models"
     # Anthropic SDK 会自行追加 /v1/messages,base URL 不能带 /v1
     set -x ANTHROPIC_BASE_URL (string replace -r '/v1/?$' '' -- $PIMM_BASE_URL)
     if not set -q PIMM_API_KEY
-        set -fx PIMM_API_KEY (op read --no-newline op://Dev/pimm-api-key/password)
+        set -fx PIMM_API_KEY (op read --no-newline op://Dev/pimm-api-key/credential)
         or begin
             echo "No 1Password item Dev/pimm-api-key"
             return 1
@@ -125,7 +129,7 @@ function ccpxy -d "Claude Code with Profile-based models"
             set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'claude-haiku-5-5'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "cyber"
-            set -l rp_key (op read --no-newline op://Dev/orca-cyber-api/password)
+            set -l rp_key (op read --no-newline op://Dev/orca-cyber-api/credential)
             or begin
                 echo "No 1Password item Dev/orca-cyber-api"
                 return 1
