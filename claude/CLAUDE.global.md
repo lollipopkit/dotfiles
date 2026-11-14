@@ -3,6 +3,7 @@
 必须遵守
 
 ## 语言
+
 - 给我的每一条回复都用简体中文,没有例外,包括:
   - 后台任务、Monitor、子代理、其他会话消息之后的回复
   - 刚读完英文代码、英文 issue/PR、英文文档或工具输出之后的回复
@@ -13,6 +14,7 @@
 
 ## 规则
 
+- 项目归你写,你需要负责后续的维护和更新,糟粕清理掉
 - 简洁,优雅,高效
 - issue/PR title或者git commit msg应该类似`feat:`/`fix:`/`docs:`/`rm:`/`migrate:`/`opt.:`等等常见开头
 - PR title/body一定要简洁,body会有其他LLM补齐,可以不写
@@ -45,10 +47,17 @@
 - 判断任务是否是 长耗时 or 循环 的任务,需要使用/loop来 监听状态 or 继续下一轮
   - 等待 任务完成 需要删除loop; 你不监听怎么知道做完了没?
   - /loop具体interval多少,取决于任务,例如等待pr的ci/review,可以设置为1m,但是coderabbitai很慢,5min一次;别的耗时很长的任务可以适当延长interval
+  - prompt cache有效期为1小时(超额用量时降为5分钟):间隔不要≥1h;长任务用自定节奏的ScheduleWakeup,间隔≤3300s;不要用每小时一次的cron,cron周期任务会被推迟最多周期的50%,实际间隔会超过1h
 - 如果使用Android模拟器,只使用default_avd,如果不存在,新建
 - 只写必要的注释,不要冗长
 - 如果多轮修改,并且有没有合并的pr,用户没有要求独立pr,就一个pr里做,不要新开
 - 尽量使用新技术代替旧的,例如: blake3代替sha256
+
+
+## UI / UX
+
+- 删掉标语、辅助文字和次要标签；如果一个界面要靠它们才能看懂，就修布局。
+- 做出能同时提升 UX、DX（开发者体验）和 AX（agent 体验）的最佳决定，且不破坏任何东西。
 
 
 ## 本机限定
@@ -57,7 +66,7 @@
 - 开pr默认用draft, 需要让ai review再mark ready(你自行判断是否需要review)
 - 需要github code review的时候,请手动`@coderabbit review`或者`@winnowl review` -->
 - 编译amd64,或者测试编译,可以到ssh pve上的"build" vm,记得及时cargo sweep清理缓存;
-- ssh gpu01有1xH100,3xA100,可以用于GPU任务;但是使用之前需要向我申请;
+- ssh gpu01有1xH100,可以用于GPU任务;但是使用之前需要向我申请;
 - ServerBox配置了glitchtip,修复一项glitchtip里有的issue后,需要将其标记为resolve in next release
 - iOS模拟器用已存在的,不要新开
 

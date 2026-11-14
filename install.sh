@@ -32,6 +32,13 @@ LINKS=(
   "claude/settings.json|$HOME/.claude/settings.json"
   "claude/statusline-command.sh|$HOME/.claude/statusline-command.sh"
   "claude/CLAUDE.global.md|$HOME/.claude/CLAUDE.md"
+  "agy/settings.json|$HOME/.gemini/antigravity-cli/settings.json"
+  "agy/statusline-command.sh|$HOME/.gemini/antigravity-cli/statusline-command.sh"
+  "agy/AGENTS.global.md|$HOME/.gemini/GEMINI.md"
+  "agy/AGENTS.global.md|$HOME/.gemini/config/AGENTS.md"
+  "agy/mcp_config.json|$HOME/.gemini/config/mcp_config.json"
+  "agy/hooks.json|$HOME/.gemini/config/hooks.json"
+  "agy/load-claude-memory.py|$HOME/.gemini/config/load-claude-memory.py"
   "codex/config.toml|$HOME/.codex/config.toml"
   "fish/config.fish|$CONFIG_HOME/fish/config.fish"
   "fish/fish_plugins|$CONFIG_HOME/fish/fish_plugins"
@@ -69,7 +76,7 @@ for entry in "${LINKS[@]}"; do
 done
 
 echo
-echo "软链完成。codex/config.toml、claude/settings.json 等文件被应用运行时写入后会直接修改仓库内文件，请留意 git diff。"
+echo "软链完成。codex/config.toml、claude/settings.json、agy/settings.json 等文件被应用运行时写入后会直接修改仓库内文件，请留意 git diff。"
 
 bootstrap_fish() {
   if ! command -v fish >/dev/null 2>&1; then

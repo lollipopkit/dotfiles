@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "dart": {
+      "command": "dart",
+      "args": [
+        "mcp-server"
+      ]
+    },
+    "glitchtip": {
+      "url": "https://sentry.lollipopkit.com/mcp"
+    },
+    "exa": {
+      "url": "https://mcp.exa.ai/mcp"
+    }
+  }
+}

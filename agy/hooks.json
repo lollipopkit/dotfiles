@@ -1,0 +1,12 @@
+{
+  "shared-claude-memory": {
+    "enabled": true,
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 \"$HOME/.gemini/config/load-claude-memory.py\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

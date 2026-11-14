@@ -100,11 +100,11 @@ function ccpxy -d "Claude Code with Profile-based models"
             set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'deepseek-v4.1-flash'
             set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'deepseek-v4.1-flash'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
-        case "mimo"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'mimo-v2.6-pro'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'mimo-v2.6-pro'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'mimo-v2.6-pro'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'mimo-v2.6-pro'
+        case "dsf"
+            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'deepseek-v4.1-flash-fast'
+            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'deepseek-v4.1-flash-fast'
+            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'deepseek-v4.1-flash-fast'
+            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'deepseek-v4.1-flash-fast'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "glm"
             set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'glm-5.3-flash'
@@ -117,18 +117,6 @@ function ccpxy -d "Claude Code with Profile-based models"
             set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-6-luna'
             set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-6-luna'
             set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-6-luna'
-            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
-        case "astra"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'gpt-6-astra'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'gpt-6-astra'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'gpt-6-astra'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'gpt-6-astra'
-            set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
-        case "haiku"
-            set -x ANTHROPIC_DEFAULT_FABLE_MODEL 'claude-haiku-5-5'
-            set -x ANTHROPIC_DEFAULT_OPUS_MODEL 'claude-haiku-5-5'
-            set -x ANTHROPIC_DEFAULT_SONNET_MODEL 'claude-haiku-5-5'
-            set -x ANTHROPIC_DEFAULT_HAIKU_MODEL 'claude-haiku-5-5'
             set -x CLAUDE_CODE_MAX_CONTEXT_TOKENS 1000000
         case "cyber"
             set -l rp_key (op read --no-newline op://Dev/orca-cyber-api/credential)
